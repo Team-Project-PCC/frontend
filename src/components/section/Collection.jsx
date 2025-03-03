@@ -19,7 +19,7 @@ const collections = [
     id: 3,
     title: "Naskah Kuno Kakawin Nagarakretagama",
     description:
-      "Sebuah naskah sastra Jawa Kuno abad ke-14 yang berisi pujian terhadap Kerajaan Majapahit, mencerminkan keindahan gita dan rupa.",
+      "Sebuah naskah sastra Jawa Kuno abad ke-14 yang berisi pujian terhadap Kerajaan Majapahit.",
     image: "/images/naskah.jpg",
   },
 ];
