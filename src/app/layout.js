@@ -15,8 +15,8 @@ export default function RootLayout({children}) {
           rel='stylesheet'
         />
       </head>
-      <body>
-        <Navbar />
+      <body className="pt-24">
+        <Navbar/>
         {children}
       </body>
     </html>

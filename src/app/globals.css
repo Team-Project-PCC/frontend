@@ -11,3 +11,15 @@
 body {
   background-color: #302C42;
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #290355; /* Warna track scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c8c0eb;
+}
