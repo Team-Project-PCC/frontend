@@ -79,7 +79,7 @@ export default function Navbar() {
                         {dropdownOpen && (
                             <div className="absolute top-12 right-0 w-48 bg-gradient-to-r from-[#8176AF] to-[#C0B7E8] shadow-lg rounded-lg py-2">
                                 <Link
-                                    href="/profil"
+                                    href="/profil-saya"
                                     className="flex items-center px-4 py-2 text-white hover:bg-[#8176AF] transition text-sm"
                                 >
                                     <FiUser className="mr-2" /> Profil Saya
@@ -122,7 +122,7 @@ export default function Navbar() {
                     {user ? (
                         <>
                             <Link
-                                href="/profil"
+                                href="/profil-saya"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="flex items-center py-2"
                             >
