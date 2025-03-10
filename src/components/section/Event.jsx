@@ -18,34 +18,34 @@ const events = [
 export default function Event() {
     return (
         <section className="py-16 bg-none">
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto px-8 md:px-10">
                 {/* Judul */}
-                <h2 className="text-3xl font-bold text-center text-white mb-12">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-white mb-12">
                     Event Terdekat
                 </h2>
 
                 {/* Grid Event */}
-                <div className="grid md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {events.map((event) => (
                         <div
                             key={event.id}
-                            className="relative h-64 rounded-lg overflow-hidden shadow-lg"
+                            className="relative h-56 sm:h-64 md:h-72 lg:h-80 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
                         >
                             {/* Background Image */}
                             <Image
                                 src={event.image}
                                 alt={event.title}
-                                layout="fill"
-                                objectFit="cover"
-                                className="absolute inset-0"
+                                fill
+                                className="object-cover"
+                                priority
                             />
 
-                            {/* Overlay */}
-                            <div className="absolute inset-0 bg-black bg-opacity-50 justify-end flex flex-col px-6 py-4">
-                                <h3 className="text-2xl font-semibold text-white">
+                            {/* Overlay Konten */}
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end px-4 md:px-6 py-3 md:py-4">
+                                <h3 className="text-lg md:text-xl lg:text-2xl font-semibold text-white mb-1">
                                     {event.title}
                                 </h3>
-                                <p className="text-lg text-gray-300">{event.date}</p>
+                                <p className="text-sm md:text-base text-gray-300">{event.date}</p>
                             </div>
                         </div>
                     ))}

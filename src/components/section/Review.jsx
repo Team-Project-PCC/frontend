@@ -27,35 +27,37 @@ const reviews = [
 export default function Review() {
     return (
         <section className="py-16 bg-none">
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto px-8 md:px-10">
                 {/* Judul */}
-                <h2 className="text-3xl font-bold text-center text-white mb-12">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-white mb-12">
                     Ulasan Pengunjung
                 </h2>
 
                 {/* Grid Review */}
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {reviews.map((user) => (
                         <div
                             key={user.id}
-                            className="bg-gradient-to-r from-[#433D60] to-[#211E2E] text-white p-6 rounded-lg shadow-lg flex flex-col"
+                            className="bg-gradient-to-r from-[#433D60] to-[#211E2E] text-white p-6 rounded-2xl shadow-lg flex flex-col hover:scale-105 transition-transform duration-300"
                         >
                             {/* Profil */}
                             <div className="flex items-center space-x-4 mb-4">
-                                <div className="w-10 h-10">
+                                <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16">
                                     <Image
                                         src={user.image}
                                         alt={user.name}
-                                        width={50}
-                                        height={50}
-                                        className="w-full h-full object-cover rounded-full"
+                                        width={64}
+                                        height={64}
+                                        className="w-full h-full object-cover rounded-full border-2 border-[#C0B7E8]"
                                     />
                                 </div>
-                                <h3 className="text-xl font-semibold">{user.name}</h3>
+                                <h3 className="text-lg md:text-xl lg:text-2xl font-semibold">{user.name}</h3>
                             </div>
 
                             {/* Review */}
-                            <p className="text-gray-300">{user.review}</p>
+                            <p className="text-sm md:text-base text-gray-300 leading-relaxed">
+                                {user.review}
+                            </p>
                         </div>
                     ))}
                 </div>
