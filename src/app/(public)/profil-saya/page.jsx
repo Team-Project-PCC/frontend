@@ -19,48 +19,49 @@ export default function ProfilSaya() {
 
     const [password, setPassword] = useState({ old: "", new: "" });
 
-    // ✅ Ambil data profil user dari API ketika halaman dimuat
+    // ✅ Fetch Profile saat page load
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const token = getToken();
-    
+                console.log("Token:", token); // Debugging token
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
                     method: "POST",
                     headers: {
+                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
                 });
-    
-                if (!res.ok) {
-                    console.error("Gagal fetch profile:", res.status);
-                    return;
-                }
-    
+
                 const data = await res.json();
-    
+                console.log("Fetch profile response:", data);
+
                 if (data.status === "success" && data.user) {
                     const user = data.user;
-    
-                    // ✅ Fallback ke user2.jpg kalau url_avatar null/undefined
-                    const avatar = user.url_avatar ? user.url_avatar : "/images/user2.jpg";
-    
+
                     setProfile({
-                        photo: avatar,
+                        photo: user.url_avatar || "/images/user2.jpg",
                         username: user.name,
                         email: user.email,
                     });
                 } else {
                     console.error("Gagal ambil data user, data kosong atau status bukan success:", data);
+
+                    // Fallback default user
+                    setProfile({
+                        photo: "/images/user2.jpg",
+                        username: "Guest",
+                        email: "guest@example.com",
+                    });
                 }
             } catch (error) {
                 console.error("Terjadi error fetch profile:", error);
             }
         };
-    
+
         fetchProfile();
     }, []);
-    
 
     // ✅ Handle perubahan input text profil
     const handleProfileChange = (e) => {
@@ -72,12 +73,13 @@ export default function ProfilSaya() {
         setPassword({ ...password, [e.target.name]: e.target.value });
     };
 
-    // ✅ Handle simpan profil (POST ke API)
+    // ✅ Handle simpan profil (POST ke API /update_profile)
     const handleSaveProfile = async () => {
         try {
             const token = getToken();
+            console.log("Token untuk update:", token); // Debug token lagi kalau perlu
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/update`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update_profile`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -89,16 +91,23 @@ export default function ProfilSaya() {
                 }),
             });
 
-            const data = await res.json();
+            const result = await res.json();
+            console.log("Update profile response:", result);
 
-            if (res.ok && data.status === "success") {
-                alert("Profil berhasil diperbarui!");
+            if (res.ok && result.status === "success") {
+                const updatedUser = result.data;
+
+                setProfile({
+                    photo: updatedUser.url_avatar || "/images/user2.jpg",
+                    username: updatedUser.name,
+                    email: updatedUser.email,
+                });
+
+                alert(result.message || "Profil berhasil diperbarui!");
                 setIsEditing(false);
-                // Fetch ulang data user jika ingin update tampilan foto/nama/email terbaru
-                // fetchProfile(); // Optional, aktifkan kalau mau refresh data otomatis
             } else {
                 alert("Gagal memperbarui profil!");
-                console.error("Error response:", data);
+                console.error("Error response:", result);
             }
         } catch (error) {
             console.error("Error saat menyimpan profil:", error);
@@ -111,7 +120,8 @@ export default function ProfilSaya() {
         if (file) {
             const photoURL = URL.createObjectURL(file);
             setProfile({ ...profile, photo: photoURL });
-            // Tambahkan fungsi upload foto jika perlu
+
+            // Kalau mau upload avatar ke server, tambahin upload logic di sini
         }
     };
 
