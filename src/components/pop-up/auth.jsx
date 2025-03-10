@@ -21,7 +21,7 @@ export default function PopupAuth({ message, success, onClose }) {
                 </div>
 
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                    {success ? "Registrasi Berhasil!" : "Registrasi Gagal!"}
+                    {success ? "Berhasil!" : "Gagal!"}
                 </h2>
 
                 <p className="text-gray-600 mb-4">{message}</p>
