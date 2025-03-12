@@ -1,40 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-
-const events = [
-    {
-        id: 1,
-        title: "Pameran Gitar Nusantara",
-        date: "15-04-2025",
-        time: "10:00 - 17:00",
-        image: "/images/festival.jpg",
-    },
-    {
-        id: 2,
-        title: "Lukisan Musik Tradisional",
-        date: "20-05-2025",
-        time: "09:00 - 18:00",
-        image: "/images/festival.jpg",
-    },
-    {
-        id: 3,
-        title: "Workshop Pembuatan Alat Musik",
-        date: "10-06-2025",
-        time: "13:00 - 16:00",
-        image: "/images/workshop.jpg",
-    },
-];
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default function Acara() {
+    const [events, setEvents] = useState([]);
     const [search, setSearch] = useState("");
     const [date, setDate] = useState("");
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
-    const filteredEvents = events.filter((event) =>
-        event.title.toLowerCase().includes(search.toLowerCase()) &&
-        (date === "" || event.date === date)
-    );
+    useEffect(() => {
+        async function fetchEvents() {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    const formattedEvents = data.events.map(event => {
+                        // Ambil schedule pertama
+                        const firstScheduleRecurring = event.event_schedules_recurring[0];
+                        const scheduleMonthly = firstScheduleRecurring?.schedule_monthly[0];
+
+                        // Konversi day -> tanggal dalam bulan sekarang (atau sesuai kebutuhan)
+                        let dateString = "TBA";
+                        if (scheduleMonthly) {
+                            const today = new Date();
+                            const year = today.getFullYear();
+                            const month = today.getMonth(); // 0-index (0 = Januari)
+
+                            // Pastikan day ada, dan valid
+                            const day = scheduleMonthly.day;
+                            const eventDate = new Date(year, month, day);
+
+                            // Format ke YYYY-MM-DD supaya cocok buat filter tanggal
+                            const formattedDate = eventDate.toISOString().split("T")[0];
+                            dateString = formattedDate;
+                        }
+
+                        return {
+                            id: event.id,
+                            title: event.title,
+                            date: dateString,
+                            time: scheduleMonthly
+                                ? `${scheduleMonthly.start_time} - ${scheduleMonthly.end_time}`
+                                : "TBA",
+                            image:
+                                event.event_images.length > 0
+                                    ? event.event_images[0].url
+                                    : "/images/default.jpg",
+                        };
+                    });
+
+                    setEvents(formattedEvents);
+                }
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchEvents();
+    }, []);
+
+    const handleClick = (event) => {
+        localStorage.setItem("selectedEventId", event.id);
+        router.push(`/acara/${encodeURIComponent(event.title)}`);
+    };
+
+    // Filter search + tanggal
+    const filteredEvents = events.filter((event) => {
+        const matchesSearch = event.title.toLowerCase().includes(search.toLowerCase());
+        const matchesDate = date === "" || event.date === date;
+        return matchesSearch && matchesDate;
+    });
 
     return (
         <section className="py-16 px-6 bg-gray-900 text-white">
@@ -58,11 +100,18 @@ export default function Acara() {
                     />
                 </div>
 
+                {/* Loading State */}
+                {loading && <LoadingOverlay />}
+
                 {/* Daftar Acara */}
                 <div className="grid md:grid-cols-3 gap-6 mt-16">
-                    {filteredEvents.length > 0 ? (
+                    {!loading && filteredEvents.length > 0 ? (
                         filteredEvents.map((event) => (
-                            <div key={event.id} className="relative rounded-lg overflow-hidden shadow-lg">
+                            <div
+                                key={event.id}
+                                className="relative rounded-lg overflow-hidden shadow-lg cursor-pointer"
+                                onClick={() => handleClick(event)}
+                            >
                                 <Image
                                     src={event.image}
                                     alt={event.title}
@@ -72,12 +121,14 @@ export default function Acara() {
                                 />
                                 <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 p-4">
                                     <h3 className="text-lg font-semibold">{event.title}</h3>
-                                    <p className="text-gray-300">{event.date} | {event.time}</p>
+                                    <p className="text-gray-300">
+                                        {event.date !== "TBA" ? event.date : "Tanggal belum tersedia"} | {event.time}
+                                    </p>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-400">Tidak ada acara yang ditemukan.</p>
+                        !loading && <p className="text-center text-gray-400">Tidak ada acara yang ditemukan.</p>
                     )}
                 </div>
             </div>

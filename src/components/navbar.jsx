@@ -67,7 +67,7 @@ export default function Navbar() {
                             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#8176AF] to-[#C0B7E8] text-white text-sm font-medium hover:opacity-90 transition"
                         >
                             <Image
-                                src={user.url_avatar || "/images/default-avatar.png"}
+                                src={user.url_avatar || "/images/user2.jpg"}
                                 alt="Avatar"
                                 width={28}
                                 height={28}
