@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 export default function ProfilePage({
     profile,
     isEditing,
@@ -13,9 +15,11 @@ export default function ProfilePage({
             <h2 className="text-xl font-bold mb-6">Profil Saya</h2>
             {/* Foto Profil */}
             <div className="flex flex-col items-center mb-6">
-                <img
+                <Image
                     src={profile.photo || "/images/user1.jpg"}
                     alt="Profile"
+                    width={100}
+                    height={100}
                     className="w-36 h-36 rounded-full object-cover mb-4"
                 />
                 {isEditing && (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import LoadingOverlay from "@/components/LoadingOverlay";
+import Image from "next/image";
 
 export default function EventDetailPage() {
     const [event, setEvent] = useState(null);
@@ -9,7 +10,7 @@ export default function EventDetailPage() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const eventId = localStorage.getItem("selectedEventId"); // ✅ Ambil dari localStorage
+        const eventId = localStorage.getItem("selectedEventId"); //  Ambil dari localStorage
         if (!eventId) {
             setError("ID acara tidak ditemukan di local storage.");
             setLoading(false);
@@ -48,9 +49,11 @@ export default function EventDetailPage() {
             <div className="max-w-3xl mx-auto bg-[#3B3655] p-8 rounded-xl shadow-lg">
                 {/* Gambar Acara */}
                 {event.event_images?.length > 0 && (
-                    <img
+                    <Image
                         src={event.event_images[0].url}
                         alt={event.title}
+                        width={100}
+                        height={100}
                         className="w-full h-64 object-cover rounded-lg mb-6"
                     />
                 )}
@@ -110,7 +113,7 @@ export default function EventDetailPage() {
 
                                 {schedule.schedule_monthly?.length > 0 ? (
                                     schedule.schedule_monthly.map((monthly) => {
-                                        // ✅ Tambahkan logika buat tanggalnya (opsional)
+                                        //  Tambahkan logika buat tanggalnya (opsional)
                                         const day = monthly.day;
                                         const today = new Date();
                                         const year = today.getFullYear();

@@ -19,7 +19,7 @@ export default function ProfilSaya() {
 
     const [password, setPassword] = useState({ old: "", new: "" });
 
-    // ✅ Fetch Profile saat page load
+    //  Fetch Profile saat page load
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -63,17 +63,17 @@ export default function ProfilSaya() {
         fetchProfile();
     }, []);
 
-    // ✅ Handle perubahan input text profil
+    //  Handle perubahan input text profil
     const handleProfileChange = (e) => {
         setProfile({ ...profile, [e.target.name]: e.target.value });
     };
 
-    // ✅ Handle perubahan input password
+    //  Handle perubahan input password
     const handlePasswordChange = (e) => {
         setPassword({ ...password, [e.target.name]: e.target.value });
     };
 
-    // ✅ Handle simpan profil (POST ke API /update_profile)
+    //  Handle simpan profil (POST ke API /update_profile)
     const handleSaveProfile = async () => {
         try {
             const token = getToken();
@@ -114,7 +114,7 @@ export default function ProfilSaya() {
         }
     };
 
-    // ✅ Handle ubah foto lokal (preview)
+    //  Handle ubah foto lokal (preview)
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
