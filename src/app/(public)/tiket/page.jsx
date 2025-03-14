@@ -48,18 +48,18 @@ export default function Tiket() {
                                     const timeRange = `${schedule.start_time.slice(0, 5)} - ${schedule.end_time.slice(0, 5)}`;
                                     return `${dayName} (${timeRange})`;
                                 });
-
                                 eventDate = days.join(", ");
                             }
-
-                            // Monthly schedule
+                            else if (recurring_type === "daily" && recurring.schedule_days.length > 0) {
+                                const schedule = recurring.schedule_days[0]; // Ambil yang pertama aja (kalau lebih dari satu, bisa pakai map)
+                                const timeRange = `${schedule.start_time.slice(0, 5)} - ${schedule.end_time.slice(0, 5)}`;
+                                eventDate = `Setiap Hari (${timeRange})`;
+                            }
                             else if (recurring_type === "monthly" && recurring.schedule_monthly.length > 0) {
                                 const day = recurring.schedule_monthly[0].day;
                                 const monthYear = today.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
                                 eventDate = `${day} ${monthYear}`;
                             }
-
-                            // Yearly schedule
                             else if (recurring_type === "yearly" && recurring.schedule_yearly.length > 0) {
                                 const date = recurring.schedule_yearly[0].date;
                                 const formattedDate = new Date(date).toLocaleDateString('id-ID', {
@@ -68,7 +68,7 @@ export default function Tiket() {
                                     year: 'numeric'
                                 });
                                 eventDate = formattedDate;
-                            }
+                            }                            
                         }
 
                         return {

@@ -6,6 +6,7 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 
+// Helper translate hari
 const translateDay = {
     monday: "Senin",
     tuesday: "Selasa",
@@ -16,6 +17,7 @@ const translateDay = {
     sunday: "Minggu",
 };
 
+// Helper slugify
 const slugify = (text) => {
     return text
         .toString()
@@ -48,8 +50,6 @@ export default function EventDetailPage() {
 
                 if (data.status === "success" && data.event) {
                     setEvent(data.event);
-
-                    // Simpan juga title event ke localStorage ketika datanya berhasil diambil
                     localStorage.setItem("selectedEventTitle", data.event.title);
                 } else {
                     setError("Acara tidak ditemukan.");
@@ -64,21 +64,36 @@ export default function EventDetailPage() {
         fetchEvent();
     }, []);
 
-    //  handle klik kategori tiket + simpan quota & id ke localStorage
-    const handleCategoryClick = (category, quota, categoryId) => {
+    const handleCategoryClick = (category, quota, categoryId, price) => {
         if (event) {
+            const recurringType = event.event_schedules_recurring?.[0]?.recurring_type || "unknown";
+    
+            // Inisialisasi array kosong buat nyimpan days kalau recurringType weekly
+            let weeklyDays = [];
+    
+            if (recurringType === "weekly") {
+                // Ambil semua days dari schedule_weekly
+                weeklyDays = event.event_schedules_recurring[0]?.schedule_weekly?.map((schedule) => schedule.day.toLowerCase()) || [];
+            }
+    
             // Simpan data ke localStorage
             localStorage.setItem("selectedCategory", category);
-            localStorage.setItem("selectedCategoryId", categoryId); //  simpan ID kategori tiket
+            localStorage.setItem("selectedCategoryId", categoryId);
             localStorage.setItem("selectedEventTitle", event.title);
-            localStorage.setItem("selectedQuota", quota); //  quota disimpan juga di sini
-
+            localStorage.setItem("selectedQuota", quota);
+            localStorage.setItem("selectedPrice", price);
+            localStorage.setItem("selectedRecurringType", recurringType);
+    
+            if (weeklyDays.length > 0) {
+                localStorage.setItem("selectedWeeklyDays", JSON.stringify(weeklyDays)); // Simpan dalam bentuk JSON string
+            }
+    
             const titleSlug = slugify(event.title);
             const categorySlug = slugify(category);
-
+    
             router.push(`/tiket/${titleSlug}/${categorySlug}`);
         }
-    };
+    };    
 
     if (loading) return <LoadingOverlay />;
     if (error) return <p className="text-center text-red-400 text-lg font-medium">{error}</p>;
@@ -129,19 +144,40 @@ export default function EventDetailPage() {
                 {event.event_schedules_recurring?.length > 0 ? (
                     event.event_schedules_recurring.map((recurring) => (
                         <div key={recurring.id} className="mt-4 border-t border-gray-600 pt-4">
-                            <p className="font-semibold">
-                                Tipe: {recurring.recurring_type === "weekly" ? "Mingguan" : "Bulanan"}
+                            <p className="font-semibold capitalize mb-2">
+                                Tipe:{" "}
+                                {{
+                                    daily: "Harian",
+                                    weekly: "Mingguan",
+                                    monthly: "Bulanan",
+                                    yearly: "Tahunan",
+                                }[recurring.recurring_type] || "Tidak diketahui"}
                             </p>
 
+                            {/* Daily */}
+                            {recurring.recurring_type === "daily" && recurring.schedule_days?.length > 0 && (
+                                <div className="mt-2">
+                                    <p className="font-medium">Dilaksanakan setiap hari pada waktu:</p>
+                                    {recurring.schedule_days.map((schedule) => (
+                                        <div key={schedule.id} className="ml-4 mt-1">
+                                            <p>
+                                                🕒 {schedule.start_time.slice(0, 5)} - {schedule.end_time.slice(0, 5)}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Weekly */}
                             {recurring.recurring_type === "weekly" && recurring.schedule_weekly?.length > 0 && (
                                 <div className="mt-2">
-                                    <p className="font-medium">Dilaksanakan setiap minggu pada:</p>
+                                    <p className="font-medium">Dilaksanakan setiap:</p>
                                     {recurring.schedule_weekly.map((schedule) => {
                                         const dayName = translateDay[schedule.day.toLowerCase()] || schedule.day;
                                         return (
                                             <div key={schedule.id} className="ml-4 mt-1">
                                                 <p>
-                                                    🗓️ {dayName} ({schedule.start_time.slice(0, 5)} - {schedule.end_time.slice(0, 5)})
+                                                    🗓️ {dayName}, pukul {schedule.start_time.slice(0, 5)} - {schedule.end_time.slice(0, 5)}
                                                 </p>
                                             </div>
                                         );
@@ -149,25 +185,40 @@ export default function EventDetailPage() {
                                 </div>
                             )}
 
+                            {/* Monthly */}
                             {recurring.recurring_type === "monthly" && recurring.schedule_monthly?.length > 0 && (
                                 <div className="mt-2">
                                     <p className="font-medium">Dilaksanakan setiap bulan pada tanggal:</p>
                                     {recurring.schedule_monthly.map((schedule) => {
                                         const today = new Date();
-                                        const formattedDate = new Date(
-                                            today.getFullYear(),
-                                            today.getMonth(),
-                                            schedule.day
-                                        ).toLocaleDateString("id-ID", {
-                                            day: "numeric",
+                                        const formattedDate = `${schedule.day} ${today.toLocaleDateString("id-ID", {
                                             month: "long",
-                                            year: "numeric",
-                                        });
+                                        })} ${today.getFullYear()}`;
 
                                         return (
                                             <div key={schedule.id} className="ml-4 mt-1">
                                                 <p>
-                                                    🗓️ {formattedDate} ({schedule.start_time} - {schedule.end_time})
+                                                    🗓️ {formattedDate}, pukul {schedule.start_time.slice(0, 5)} - {schedule.end_time.slice(0, 5)}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Yearly */}
+                            {recurring.recurring_type === "yearly" && recurring.schedule_yearly?.length > 0 && (
+                                <div className="mt-2">
+                                    <p className="font-medium">Dilaksanakan setiap tahun pada tanggal:</p>
+                                    {recurring.schedule_yearly.map((schedule) => {
+                                        const formattedDate = `${schedule.day} ${new Date(0, schedule.month - 1).toLocaleDateString("id-ID", {
+                                            month: "long",
+                                        })} ${new Date().getFullYear()}`;
+
+                                        return (
+                                            <div key={schedule.id} className="ml-4 mt-1">
+                                                <p>
+                                                    🗓️ {formattedDate}, pukul {schedule.start_time.slice(0, 5)} - {schedule.end_time.slice(0, 5)}
                                                 </p>
                                             </div>
                                         );
@@ -191,7 +242,7 @@ export default function EventDetailPage() {
                             <div
                                 key={ticket.id}
                                 className="bg-[#4A4368] p-6 rounded-lg flex flex-col justify-center items-center shadow-md cursor-pointer hover:bg-[#5B5080] transition-all"
-                                onClick={() => handleCategoryClick(ticket.category, ticket.quota, ticket.id)}
+                                onClick={() => handleCategoryClick(ticket.category, ticket.quota, ticket.id, ticket.price)}
                             >
                                 <p className="text-xl font-bold mb-2">{ticket.category.toUpperCase()}</p>
                                 <p className="text-white font-medium">
