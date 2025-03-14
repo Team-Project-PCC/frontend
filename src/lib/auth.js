@@ -1,8 +1,8 @@
 import Cookies from "js-cookie";
 
-// Simpan token ke cookies dengan masa berlaku 7 hari
+// Simpan token ke cookies dengan masa berlaku 1 hari
 export const setToken = (token) => {
-    Cookies.set("token", token, { expires: 7, secure: true });
+    Cookies.set("token", token, { expires: 1, secure: true });
 };
 
 // Ambil token dari cookies
