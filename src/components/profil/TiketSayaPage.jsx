@@ -9,7 +9,7 @@ export default function TiketSayaPage() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const router = useRouter(); // ⬅️ pakai useRouter dari next/navigation
+    const router = useRouter();
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -37,8 +37,7 @@ export default function TiketSayaPage() {
                 }
 
                 const response = await res.json();
-
-                const userOrders = response?.history_order || [];
+                const userOrders = response.history_order || [];
                 setOrders(userOrders);
             } catch (err) {
                 console.error(err);
@@ -52,15 +51,10 @@ export default function TiketSayaPage() {
     }, []);
 
     const handleOrderClick = (eventName, orderId) => {
-        // Simpan ID order di localStorage
         localStorage.setItem("selectedOrderId", orderId);
-    
-        // Bikin slug buat URL
         const slug = eventName.toLowerCase().replace(/\s+/g, "-");
-    
-        // Navigasi pakai slug
         router.push(`/profil-saya/riwayat/${slug}`);
-    };    
+    };
 
     if (loading) {
         return <LoadingOverlay />;
@@ -80,13 +74,13 @@ export default function TiketSayaPage() {
                 ) : (
                     orders.map((order) => {
                         const { label, className } = getStatus(order);
-                        const eventName = getEventName(order.event_id);
+                        const eventName = order.event?.title || "Event Tidak Diketahui";
 
                         return (
                             <div
                                 key={order.id}
                                 className="border p-4 rounded-md bg-white shadow-md flex justify-between items-center cursor-pointer hover:bg-gray-50"
-                                onClick={() => handleOrderClick(eventName, order.id)} // ⬅️ trigger navigasi
+                                onClick={() => handleOrderClick(eventName, order.id)}
                             >
                                 <div>
                                     <h3 className="text-lg font-semibold">{eventName}</h3>
@@ -96,9 +90,7 @@ export default function TiketSayaPage() {
                                 </div>
 
                                 <div>
-                                    <span
-                                        className={`px-4 py-2 rounded-full text-sm font-medium ${className}`}
-                                    >
+                                    <span className={`px-4 py-2 rounded-full text-sm font-medium ${className}`}>
                                         {label}
                                     </span>
                                 </div>
@@ -110,18 +102,6 @@ export default function TiketSayaPage() {
         </div>
     );
 }
-
-// Helper Functions
-const getEventName = (eventId) => {
-    switch (eventId) {
-        case 1:
-            return "Konser Musik Tradisional";
-        case 4:
-            return "Festival Budaya";
-        default:
-            return "Event Lainnya";
-    }
-};
 
 const getStatus = (order) => {
     const isPastEvent = new Date(order.date) < new Date();
