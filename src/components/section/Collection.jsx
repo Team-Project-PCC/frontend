@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // Next.js 13+
 
 const collections = [
   {
@@ -25,6 +28,12 @@ const collections = [
 ];
 
 export default function Collection() {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/koleksi");
+  };
+
   return (
     <section className="py-16 bg-none">
       <div className="container mx-auto px-8 md:px-10">
@@ -59,7 +68,9 @@ export default function Collection() {
 
         {/* Tombol Lihat Lainnya */}
         <div className="mt-10 md:mt-12 text-center">
-          <button className="px-6 md:px-8 py-2.5 md:py-3 rounded-full bg-gradient-to-r from-[#8176AF] to-[#C0B7E8] text-black font-semibold text-sm md:text-base hover:opacity-90 transition">
+          <button
+            onClick={handleClick}
+            className="px-6 md:px-8 py-2.5 md:py-3 rounded-full bg-gradient-to-r from-[#8176AF] to-[#C0B7E8] text-black font-semibold text-sm md:text-base hover:opacity-90 transition">
             Lihat Lainnya
           </button>
         </div>

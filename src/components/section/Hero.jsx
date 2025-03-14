@@ -1,6 +1,15 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // Next.js 13+
 
 export default function Hero() {
+    const router = useRouter();
+
+    const handleClick = () => {
+        router.push("/tiket");
+    };
+
     return (
         <div className="relative bg-[url('/images/museum-hero.png')] bg-cover bg-center h-[500px] md:h-[650px] flex items-center">
             {/* Overlay */}
@@ -30,7 +39,10 @@ export default function Hero() {
                     </p>
 
                     <div className="flex justify-center lg:justify-start">
-                        <button className="bg-gradient-to-r from-[#8176AF] to-[#C0B7E8] text-[#343045] px-6 md:px-8 py-3 rounded-full font-semibold text-sm md:text-base lg:text-lg shadow-lg hover:opacity-80 transition w-max">
+                        <button
+                            onClick={handleClick}
+                            className="bg-gradient-to-r from-[#8176AF] to-[#C0B7E8] text-[#343045] px-6 md:px-8 py-3 rounded-full font-semibold text-sm md:text-base lg:text-lg shadow-lg hover:opacity-80 transition w-max"
+                        >
                             🎟️ Dapatkan Tiket Sekarang
                         </button>
                     </div>
