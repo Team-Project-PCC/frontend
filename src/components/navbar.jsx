@@ -55,7 +55,6 @@ export default function Navbar() {
                 <ul className="hidden md:flex space-x-6 text-white font-medium text-base">
                     <li><Link href="/">Beranda</Link></li>
                     <li><Link href="/koleksi">Koleksi</Link></li>
-                    <li><Link href="/acara">Acara</Link></li>
                     <li><Link href="/tiket">Tiket</Link></li>
                 </ul>
 
@@ -116,7 +115,6 @@ export default function Navbar() {
                 <div className="md:hidden mt-4 px-4 space-y-4 bg-gradient-to-r from-[#8176AF] to-[#C0B7E8] rounded-lg py-4 text-white text-sm font-medium transition-all duration-300">
                     <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-2">Beranda</Link>
                     <Link href="/koleksi" onClick={() => setMobileMenuOpen(false)} className="block py-2">Koleksi</Link>
-                    <Link href="/acara" onClick={() => setMobileMenuOpen(false)} className="block py-2">Acara</Link>
                     <Link href="/tiket" onClick={() => setMobileMenuOpen(false)} className="block py-2">Tiket</Link>
 
                     {user ? (
