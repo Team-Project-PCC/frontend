@@ -76,7 +76,7 @@ export default function EventDetailPage() {
             const titleSlug = slugify(event.title);
             const categorySlug = slugify(category);
 
-            router.push(`/acara/${titleSlug}/${categorySlug}`);
+            router.push(`/tiket/${titleSlug}/${categorySlug}`);
         }
     };
 
